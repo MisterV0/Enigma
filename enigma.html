@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message Encoder/Decoder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Cinzel Decorative', cursive;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #2b2b2b;
+            color: #f8f9fa;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            width: 800px;
+            height: 500px;
+            border: 2px solid #555;
+            background: #1c1c1c;
+        }
+        .section {
+            flex: 1;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+        textarea, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            box-sizing: border-box;
+            font-size: 18px;
+            background: #222;
+            color: #f8f9fa;
+            border: 1px solid #666;
+            border-radius: 4px;
+            resize: none;
+            font-family: 'Cinzel Decorative', cursive;
+        }
+        input[type="number"] {
+            height: 40px;
+        }
+        button, .swap-button {
+            margin-top: 20px;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid #888;
+            background-color: #555;
+            color: white;
+            border-radius: 4px;
+            font-family: 'Cinzel Decorative', cursive;
+        }
+        button:hover, .swap-button:hover {
+            background-color: #777;
+        }
+        .output {
+            padding: 10px;
+            height: calc(100% - 50px);
+            font-size: 18px;
+            background: #222;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            color: #f8f9fa;
+            font-family: 'Cinzel Decorative', cursive;
+        }
+        .swap-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .swap-button {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            line-height: 0;
+            border-radius: 50%;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Input Section -->
+        <div class="section input-section">
+            <h2 id="modeTitle">Encode</h2>
+            <textarea id="inputText" placeholder="Type your message here..."></textarea>
+        </div>
+
+        <!-- Code Section -->
+        <div class="section code-section">
+            <h2>Code</h2>
+            <input id="code" type="number" min="1" max="9" placeholder="Enter a code (1-9)">
+            <div class="swap-container">
+                <button onclick="processMessage()">Submit</button>
+                <button class="swap-button" onclick="swapMode()">↔</button>
+            </div>
+        </div>
+
+        <!-- Output Section -->
+        <div class="section output-section">
+            <h2>Output</h2>
+            <div id="output" class="output"></div>
+        </div>
+    </div>
+
+    <script>
+        let isEncoding = true;
+
+        // Function to encode or decode the message based on current mode
+        function processMessage() {
+            const inputText = document.getElementById('inputText').value;
+            const code = parseInt(document.getElementById('code').value, 10);
+
+            if (isNaN(code) || code < 1 || code > 9) {
+                document.getElementById('output').textContent = 'Please enter a valid code between 1 and 9.';
+                return;
+            }
+
+            let processedMessage = inputText.split('').map(char => {
+                if (/[a-zA-Z]/.test(char)) {
+                    const charCode = char.charCodeAt(0);
+                    const base = char >= 'a' ? 97 : 65; // 'a' or 'A'
+                    const shift = isEncoding ? code : -code; // Shift based on encoding or decoding
+                    return String.fromCharCode(((charCode - base + shift + 26) % 26) + base); // Add 26 to handle negative mod
+                }
+                return char; // Non-alphabetic characters remain the same
+            }).join('');
+
+            document.getElementById('output').textContent = processedMessage;
+        }
+
+        // Function to swap between encoding and decoding
+        function swapMode() {
+            isEncoding = !isEncoding;
+            document.getElementById('modeTitle').textContent = isEncoding ? 'Encode' : 'Decode';
+        }
+    </script>
+</body>
+</html>
