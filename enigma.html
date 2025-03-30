@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Message Encoder</title>
+    <title>Secure Message Encoder V2</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -23,7 +23,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh; /* Changed to min-height for flexibility */
+            padding: 20px 0; /* Add padding for smaller viewports */
             background: var(--background-light);
             color: var(--text-dark);
             line-height: 1.6;
@@ -31,7 +32,8 @@
         .container {
             display: flex;
             flex-direction: column;
-            width: 900px;
+            width: 90%; /* Use percentage for responsiveness */
+            max-width: 900px; /* Keep a max width */
             background: white;
             border-radius: 16px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.1);
@@ -59,6 +61,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            gap: 10px; /* Add gap for wrapped items */
         }
         h2 {
             font-weight: 600;
@@ -66,17 +70,18 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            font-size: 1.4em; /* Adjust size */
         }
-        textarea, input {
+        textarea, input[type="text"], input[type="password"] { /* Target specific input types */
             width: 100%;
             padding: 12px;
             border: 1px solid #dee2e6;
             border-radius: 8px;
             font-size: 16px;
             transition: all var(--transition-speed) ease;
-            resize: none;
+            resize: vertical; /* Allow vertical resize for textarea */
         }
-        textarea:focus, input:focus {
+        textarea:focus, input[type="text"]:focus, input[type="password"]:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
@@ -84,6 +89,7 @@
         .button-group {
             display: flex;
             gap: 10px;
+            margin-top: 15px; /* Add margin for spacing */
         }
         button {
             background-color: var(--primary-color);
@@ -94,9 +100,10 @@
             cursor: pointer;
             transition: all var(--transition-speed) ease;
             font-weight: 600;
-            display: flex;
+            display: inline-flex; /* Use inline-flex for alignment */
             align-items: center;
             gap: 8px;
+            font-size: 1rem; /* Ensure consistent font size */
         }
         button:hover {
             background-color: #0056b3;
@@ -120,10 +127,12 @@
             line-height: 1.6;
             position: relative;
             border: 1px dashed #dee2e6;
+            word-wrap: break-word; /* Ensure long words wrap */
+            white-space: pre-wrap; /* Preserve whitespace and wrap */
         }
         .output-char {
             opacity: 0;
-            display: inline-block;
+            display: inline; /* Changed from inline-block for better text flow */
             transition: opacity 0.1s ease-in;
         }
         .output-char.visible {
@@ -148,10 +157,12 @@
             border-radius: 4px;
             font-size: 12px;
             top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
+            right: 0; /* Align near icon */
+            transform: translateX(0); /* Adjust transform */
             opacity: 0;
             transition: opacity var(--transition-speed) ease;
+            white-space: nowrap; /* Prevent tooltip text wrapping */
+            pointer-events: none; /* Prevent tooltip from blocking clicks */
         }
         .tooltip.show {
             opacity: 1;
@@ -159,7 +170,7 @@
         .info-section {
             background-color: #f1f3f5;
             display: flex;
-            align-items: center;
+            align-items: flex-start; /* Align items top */
             gap: 15px;
             padding: 15px;
             border-radius: 8px;
@@ -168,6 +179,8 @@
         .info-icon {
             color: var(--primary-color);
             font-size: 24px;
+            flex-shrink: 0; /* Prevent icon shrinking */
+            margin-top: 3px; /* Align icon better with text */
         }
         .code-input-container {
             position: relative;
@@ -183,6 +196,11 @@
             color: var(--secondary-color);
             padding: 5px;
         }
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -191,18 +209,11 @@
         <div class="section input-section">
             <div class="section-header">
                 <h2 id="modeTitle">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                        <path d="M12 11V6"></path>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M12 11V6"></path></svg>
                     Encode
                 </h2>
                 <button class="swap-button" onclick="swapMode()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M8 12h8"></path>
-                        <path d="M12 8l4 4-4 4"></path>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="14 9 9 4 4 9"></polyline><polyline points="20 15 15 20 10 15"></polyline></svg>
                     Switch Mode
                 </button>
             </div>
@@ -212,41 +223,24 @@
         <!-- Code Section -->
         <div class="section code-section">
             <h2>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                </svg>
-                Encryption Code
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                Secret Key
             </h2>
             <div class="info-section">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="info-icon">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-                Choose a number between 1-9. This will be your secret encryption key.
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="info-icon"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <span>Enter a secret key (can include letters and numbers). This key determines the character shift. Longer, more complex keys are generally better.</span>
             </div>
             <div class="code-input-container">
-                <input id="code" type="password" min="1" max="9" placeholder="Enter a code (1-9)">
+                <!-- Changed type to text, removed min/max, updated placeholder -->
+                <input id="keyInput" type="password" placeholder="Enter your secret key">
                 <button class="toggle-visibility" id="toggleVisibility">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 5c-7.333 0-12 6-12 6s4.667 6 12 6 12-6 12-6-4.667-6-12-6Z"></path>
-                        <circle cx="12" cy="11" r="3"></circle>
-                    </svg>
+                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5c-7.333 0-12 6-12 6s4.667 6 12 6 12-6 12-6-4.667-6-12-6Z"></path><circle cx="12" cy="11" r="3"></circle></svg>
                 </button>
             </div>
-            <div style="margin-top: 15px;">
+             <div id="keyError" class="error-message"></div> <!-- Error message placeholder -->
+            <div class="button-group">
                 <button onclick="processMessage()">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2v4"></path>
-                        <path d="M12 18v4"></path>
-                        <path d="m4.93 4.93 2.83 2.83"></path>
-                        <path d="m16.24 16.24 2.83 2.83"></path>
-                        <path d="M2 12h4"></path>
-                        <path d="M18 12h4"></path>
-                        <path d="m4.93 19.07 2.83-2.83"></path>
-                        <path d="m16.24 7.76 2.83-2.83"></path>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"></path><path d="M12 18v4"></path><path d="m4.93 4.93 2.83 2.83"></path><path d="m16.24 16.24 2.83 2.83"></path><path d="M2 12h4"></path><path d="M18 12h4"></path><path d="m4.93 19.07 2.83-2.83"></path><path d="m16.24 7.76 2.83-2.83"></path></svg>
                     Process
                 </button>
             </div>
@@ -255,18 +249,18 @@
         <!-- Output Section -->
         <div class="section output-section">
             <h2>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
                 Output
             </h2>
             <div id="output" class="output">
+                <!-- Copy icon and tooltip structure remains -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="copy-icon" id="copyIcon">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                 </svg>
                 <span id="copyTooltip" class="tooltip">Copied!</span>
+                <!-- Initial placeholder text -->
+                Your result will appear here...
             </div>
         </div>
     </div>
@@ -279,39 +273,75 @@
         function swapMode() {
             mode = mode === "encode" ? "decode" : "encode";
             const modeTitle = document.getElementById('modeTitle');
-            modeTitle.innerHTML = `
+            // Update title icon based on mode maybe? (Optional enhancement)
+             modeTitle.innerHTML = `
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                    <path d="M12 11V6"></path>
-                </svg>
-                ${mode === "encode" ? "Encode" : "Decode"}
+                    ${mode === 'encode' ? '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="M12 11V6"></path>' : '<path d="M12 16.5V9.75M19.25 16.5L12 21.75l-7.25-5.25M12 3 4.75 7.5 12 12l7.25-4.5L12 3z"></path><path d="M1 12l11 6.5L23 12"></path><path d="M4.75 7.5V12"></path><path d="M19.25 7.5V12"></path>'}
+                 </svg>
+                ${mode.charAt(0).toUpperCase() + mode.slice(1)} <!-- Capitalize mode name -->
             `;
+             // Clear output when swapping mode
+            clearOutput();
+            document.getElementById('inputText').value = ''; // Clear input text too
         }
 
         // Toggle code visibility
         document.getElementById('toggleVisibility').addEventListener('click', function() {
-            const codeInput = document.getElementById('code');
+            const keyInput = document.getElementById('keyInput'); // Changed ID
             const toggleButton = document.getElementById('toggleVisibility');
-            
+
             codeVisible = !codeVisible;
-            codeInput.type = codeVisible ? 'number' : 'password';
-            
-            // Update the eye icon based on visibility state
-            toggleButton.innerHTML = codeVisible ? 
-                `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path d="m3 3 18 18"></path>
-                </svg>` : 
-                `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 5c-7.333 0-12 6-12 6s4.667 6 12 6 12-6 12-6-4.667-6-12-6Z"></path>
-                    <circle cx="12" cy="11" r="3"></circle>
-                </svg>`;
+            keyInput.type = codeVisible ? 'text' : 'password'; // Change type between text/password
+
+            // Update the eye icon based on visibility state (using slashed eye for visible)
+            toggleButton.innerHTML = codeVisible ?
+                `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line x1="2" y1="2" x2="22" y2="22"></line></svg>` : // Eye with slash
+                `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5c-7.333 0-12 6-12 6s4.667 6 12 6 12-6 12-6-4.667-6-12-6Z"></path><circle cx="12" cy="11" r="3"></circle></svg>`; // Regular eye
         });
+
+        // --- New Helper: Clear Output Area ---
+        function clearOutput() {
+             const outputElement = document.getElementById('output');
+             outputElement.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="copy-icon" id="copyIcon">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                <span id="copyTooltip" class="tooltip">Copied!</span>
+                Your result will appear here...`;
+            // Re-attach copy listener is needed if the icon was completely replaced
+            setupCopyIcon(''); // Setup with empty text initially
+        }
+
+        // --- New Helper: Setup Copy Icon Listener ---
+        function setupCopyIcon(textToCopy) {
+            const copyIcon = document.getElementById('copyIcon');
+            const copyTooltip = document.getElementById('copyTooltip');
+            if (!copyIcon || !copyTooltip) return; // Safety check
+
+            // Clone and replace to remove old listeners effectively
+            const newCopyIcon = copyIcon.cloneNode(true);
+            copyIcon.parentNode.replaceChild(newCopyIcon, copyIcon);
+
+            newCopyIcon.addEventListener('click', () => {
+                if (!textToCopy) return; // Don't copy if there's nothing
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    copyTooltip.classList.add('show');
+                    // Ensure tooltip is positioned relative to the new icon if needed
+                    setTimeout(() => {
+                        copyTooltip.classList.remove('show');
+                    }, 1500); // Shorter duration
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                    // Optionally show an error tooltip
+                });
+            });
+        }
+
 
         // Typing effect function
         function typeWriter(text, element) {
-            // Clear previous content
+            // Clear previous content but keep structure
             element.innerHTML = `
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="copy-icon" id="copyIcon">
                     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -319,56 +349,122 @@
                 </svg>
                 <span id="copyTooltip" class="tooltip">Copied!</span>
             `;
-            const copyIcon = document.getElementById('copyIcon');
-            const copyTooltip = document.getElementById('copyTooltip');
+             // Setup the copy icon functionality with the final text
+            setupCopyIcon(text);
 
-            // Add copy functionality
-            copyIcon.addEventListener('click', () => {
-                navigator.clipboard.writeText(text).then(() => {
-                    copyTooltip.classList.add('show');
-                    setTimeout(() => {
-                        copyTooltip.classList.remove('show');
-                    }, 2000);
-                });
-            });
+            if (!text) {
+                 element.insertAdjacentHTML('beforeend', 'No output generated.'); // Handle empty output
+                 return;
+            }
 
             // Create and append characters one by one
             text.split('').forEach((char, index) => {
                 const charSpan = document.createElement('span');
-                charSpan.textContent = char;
+                 // Handle newline characters explicitly for correct rendering
+                if (char === '\n') {
+                    charSpan.appendChild(document.createElement('br'));
+                } else {
+                     charSpan.textContent = char;
+                }
                 charSpan.classList.add('output-char');
                 element.appendChild(charSpan);
 
                 // Stagger the visibility of each character
+                 // Use a faster delay for longer texts
+                const delay = text.length > 100 ? 10 : 30;
                 setTimeout(() => {
                     charSpan.classList.add('visible');
-                }, index * 50);
+                }, index * delay);
             });
         }
 
-        // Process the message based on the current mode
+        // --- Updated: Process the message based on the new logic ---
         function processMessage() {
             const inputText = document.getElementById('inputText').value;
-            const code = parseInt(document.getElementById('code').value, 10);
+            const key = document.getElementById('keyInput').value; // Get the key string
             const outputElement = document.getElementById('output');
+            const keyErrorElement = document.getElementById('keyError');
 
-            if (isNaN(code) || code < 1 || code > 9) {
-                outputElement.textContent = 'Please enter a valid code between 1 and 9.';
+            keyErrorElement.textContent = ''; // Clear previous errors
+
+            // --- Key Validation ---
+            if (!key || key.trim().length === 0) {
+                keyErrorElement.textContent = 'Please enter a secret key.';
+                clearOutput(); // Clear output area
                 return;
             }
 
+            // --- Calculate Shift Value from Key ---
+            let initialShift = 0;
+            for (let i = 0; i < key.length; i++) {
+                initialShift += key.charCodeAt(i);
+            }
+
+            if (initialShift === 0) {
+                 keyErrorElement.textContent = 'Key resulted in zero shift. Please use a different key.';
+                 clearOutput();
+                 return;
+            }
+
+            // --- Normalize Shift (Divide by 2) ---
+            // Target range is the number of printable ASCII chars (32 to 126 inclusive)
+            const printableAsciiStart = 32;
+            const printableAsciiEnd = 126;
+            const rangeSize = printableAsciiEnd - printableAsciiStart + 1; // Should be 95
+
+            let finalShift = initialShift;
+
+            // Reduce the shift if it's larger than the range size using the division method
+            // We also take modulo rangeSize at the end to ensure it's within 0 to rangeSize-1
+            while (finalShift >= rangeSize) {
+                 finalShift = Math.floor(finalShift / 2);
+                 // Prevent infinite loop if key somehow leads to massive initial value halving to 0
+                 if (finalShift === 0) {
+                     finalShift = 1; // Assign a minimal shift if it zeros out
+                     break;
+                 }
+            }
+            // Ensure finalShift is positive and within the desired range [0, rangeSize-1]
+            // Modulo is crucial here, the division loop is per user request but might not be optimal
+            finalShift = finalShift % rangeSize;
+            if (finalShift === 0 && initialShift !== 0) {
+                // If modulo result is 0, but initial wasn't, make shift 1 (or rangeSize/2?)
+                // Avoid zero shift unless the key genuinely calculated to 0 initially (which we blocked)
+                finalShift = 1;
+            }
+
+
+            // --- Process Each Character ---
             const processedMessage = inputText.split('').map(char => {
-                if (/[a-zA-Z]/.test(char)) {
-                    const charCode = char.charCodeAt(0);
-                    const base = char >= 'a' ? 97 : 65; // 'a' or 'A'
-                    const shift = mode === "encode" ? code : -code;
-                    return String.fromCharCode(((charCode - base + shift + 26) % 26) + base);
+                const charCode = char.charCodeAt(0);
+
+                // Check if the character is within the printable ASCII range (32-126)
+                if (charCode >= printableAsciiStart && charCode <= printableAsciiEnd) {
+                    const charOffset = charCode - printableAsciiStart; // Position within the 0-94 range
+                    let shiftedOffset;
+
+                    if (mode === "encode") {
+                        shiftedOffset = (charOffset + finalShift) % rangeSize;
+                    } else { // decode
+                        // Add rangeSize before modulo to handle potential negative results correctly
+                        shiftedOffset = (charOffset - finalShift + rangeSize) % rangeSize;
+                    }
+                    // Convert back to the actual ASCII code
+                    return String.fromCharCode(printableAsciiStart + shiftedOffset);
+                } else {
+                    // Keep non-printable characters (like newline, tab) and extended chars unchanged
+                    return char;
                 }
-                return char; // Non-alphabetic characters remain the same
             }).join('');
 
             typeWriter(processedMessage, outputElement);
         }
+
+        // Initial setup for copy icon when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            setupCopyIcon(''); // Setup with empty text initially
+        });
+
     </script>
 </body>
 </html>
